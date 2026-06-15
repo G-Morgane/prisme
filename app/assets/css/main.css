@@ -1,0 +1,57 @@
+:root {
+  /* Surfaces — blanc dominant */
+  --bg: #ffffff;
+  --bg-soft: #fafafc;
+  --panel: #ffffff;
+  --line: #ededf2;
+  --line-strong: #e2e2ea;
+
+  /* Encre */
+  --ink: #17171f;
+  --ink-soft: #5a5a6b;
+  --muted: #9a9aab;
+
+  /* Spectre Prisme — dégradé signature */
+  --prism: linear-gradient(115deg, #5cc9e6 0%, #6fa1e8 26%, #9b86df 52%, #ce7ec4 76%, #ef9a86 100%);
+  --prism-soft: linear-gradient(115deg, #d9f2f8, #e4eafc, #ece6f7, #f7e6f1, #fbeae3);
+
+  --shadow: 0 1px 2px rgba(23, 23, 31, 0.04), 0 12px 32px -16px rgba(23, 23, 31, 0.18);
+  --radius: 18px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(206, 126, 196, 0.06), transparent 60%),
+    radial-gradient(900px 500px at -5% 110%, rgba(92, 201, 230, 0.06), transparent 55%),
+    var(--bg-soft);
+  color: var(--ink);
+  font-family: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'ss01', 'cv11';
+  line-height: 1.5;
+}
+
+::selection {
+  background: rgba(155, 134, 223, 0.22);
+}
+
+.prism-text {
+  background: var(--prism);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+button {
+  font-family: inherit;
+}
