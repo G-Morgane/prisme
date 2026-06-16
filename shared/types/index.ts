@@ -174,6 +174,37 @@ export interface EtatEvolutionPayload {
   points: Point[]
 }
 
+// ─── Collectivités locales — /api/collectivites ────────────────────────────────
+
+export interface CollectiviteItem {
+  code: string
+  label: string
+  eur: number
+}
+export interface CollectivitesPayload {
+  latestYear: number | null
+  totalEur: number
+  items: CollectiviteItem[]
+}
+
+// ─── Dette publique — /api/dette ───────────────────────────────────────────────
+
+export interface DettePayload {
+  latestYear: number | null
+  /** Dette publique brute, en % du PIB. */
+  dette: Point[]
+  /** Charge de la dette (intérêts), en % du PIB. */
+  interets: Point[]
+}
+
+// ─── Comparaison internationale — /api/international ────────────────────────────
+
+export interface InternationalPayload {
+  year: number | null
+  /** Dépense publique totale par pays, en % du PIB. */
+  total: CountryValue[]
+}
+
 // ─── Types présentationnels (composants de viz) ────────────────────────────────
 
 /** Item générique pour le donut (PrismDonut). */

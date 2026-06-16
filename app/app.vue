@@ -11,12 +11,12 @@ const enrichedPostes = POSTES.filter((p) => p.enriched)
       <NuxtLink to="/" class="brand"><PrismLogo :size="24" /></NuxtLink>
 
       <nav class="nav">
-        <NuxtLink to="/" class="item">
-          <span class="dotmark" /> Tableau de bord
-        </NuxtLink>
-        <NuxtLink to="/budget-etat" class="item">
-          <span class="dotmark" /> Budget de l'État
-        </NuxtLink>
+        <p class="group">Vue d'ensemble</p>
+        <NuxtLink to="/" class="item"><span class="dotmark" /> Tableau de bord</NuxtLink>
+        <NuxtLink to="/budget-etat" class="item"><span class="dotmark" /> Budget de l'État</NuxtLink>
+        <NuxtLink to="/collectivites" class="item"><span class="dotmark" /> Collectivités locales</NuxtLink>
+        <NuxtLink to="/international" class="item"><span class="dotmark" /> Comparaison internationale</NuxtLink>
+        <NuxtLink to="/dette" class="item"><span class="dotmark" /> Dette publique</NuxtLink>
 
         <p v-if="enrichedPostes.length" class="group">Analyses détaillées</p>
         <NuxtLink v-for="p in enrichedPostes" :key="p.code" :to="`/poste/${p.slug}`" class="item sub">

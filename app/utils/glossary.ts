@@ -91,18 +91,22 @@ export interface Poste {
   code: string
   slug: string
   label: string
-  // enriched = a une analyse approfondie (source en plus de la décompo COFOG du dashboard).
-  // Seuls les postes enrichis sont listés dans la sidebar pour ne pas la surcharger.
+  /**
+   * enriched = a une analyse approfondie (source en plus de la décompo COFOG du dashboard).
+   * Seuls les postes enrichis sont listés dans la sidebar pour ne pas la surcharger.
+   */
   enriched?: boolean
+  /** Missions du budget de l'État rattachées à ce poste (onglet « Budget de l'État »). */
+  missions?: string[]
 }
 export const POSTES: Poste[] = [
-  { code: 'GF10', slug: 'protection-sociale', label: 'Protection sociale' },
+  { code: 'GF10', slug: 'protection-sociale', label: 'Protection sociale', enriched: true },
   { code: 'GF07', slug: 'sante', label: 'Santé', enriched: true },
-  { code: 'GF09', slug: 'enseignement', label: 'Enseignement' },
+  { code: 'GF09', slug: 'enseignement', label: 'Enseignement', enriched: true, missions: ['Enseignement scolaire', 'Recherche et enseignement supérieur'] },
   { code: 'GF04', slug: 'affaires-economiques', label: 'Affaires économiques' },
   { code: 'GF01', slug: 'services-publics-generaux', label: 'Services publics généraux' },
-  { code: 'GF03', slug: 'ordre-securite', label: 'Ordre et sécurité publics' },
-  { code: 'GF02', slug: 'defense', label: 'Défense' },
+  { code: 'GF03', slug: 'ordre-securite', label: 'Ordre et sécurité publics', enriched: true, missions: ['Sécurités', 'Justice'] },
+  { code: 'GF02', slug: 'defense', label: 'Défense', enriched: true, missions: ['Défense'] },
   { code: 'GF06', slug: 'logements', label: 'Logements et équipements collectifs' },
   { code: 'GF08', slug: 'loisirs-culture', label: 'Loisirs, culture et culte' },
   { code: 'GF05', slug: 'environnement', label: "Protection de l'environnement" },

@@ -24,8 +24,26 @@ const kpi = computed(() => valueAt(node.value?.series[unit.value], latestYear.va
 const kpiEur = computed(() => valueAt(node.value?.series.MIO_EUR, latestYear.value))
 const kpiPct = computed(() => valueAt(node.value?.series.PC_GDP, latestYear.value))
 
-// Onglet de vue (Santé uniquement ; les autres postes n'ont que « cofog »).
-const view = ref<'cofog' | 'prestataire' | 'financeur' | 'international' | 'patho'>('cofog')
+// Onglets disponibles selon le poste (cofog pour tous ; sources en plus si enrichi).
+interface TabDef { key: string; label: string }
+const tabs = computed<TabDef[]>(() => {
+  const p = poste.value
+  if (!p) return []
+  const t: TabDef[] = [{ key: 'cofog', label: 'Décomposition' }]
+  if (p.slug === 'sante') {
+    t.push(
+      { key: 'prestataire', label: 'Par prestataire' },
+      { key: 'financeur', label: 'Qui paie ?' },
+      { key: 'patho', label: 'Par pathologie' },
+    )
+  }
+  if (p.enriched) t.push({ key: 'international', label: 'International' })
+  if (p.missions?.length) t.push({ key: 'etat', label: "Budget de l'État" })
+  return t
+})
+const view = ref('cofog')
+// Repli sur la décomposition quand on change de poste.
+watch(() => poste.value?.slug, () => (view.value = 'cofog'))
 
 useHead({ title: () => `Prisme — ${poste.value?.label ?? 'poste'}` })
 </script>
@@ -59,46 +77,39 @@ useHead({ title: () => `Prisme — ${poste.value?.label ?? 'poste'}` })
         </div>
       </section>
 
-      <!-- Santé : onglets multi-sources -->
-      <template v-if="poste.slug === 'sante'">
-        <nav class="vtabs">
-          <button :class="{ on: view === 'cofog' }" @click="view = 'cofog'">Décomposition</button>
-          <button :class="{ on: view === 'prestataire' }" @click="view = 'prestataire'">Par prestataire</button>
-          <button :class="{ on: view === 'financeur' }" @click="view = 'financeur'">Qui paie ?</button>
-          <button :class="{ on: view === 'international' }" @click="view = 'international'">International</button>
-          <button :class="{ on: view === 'patho' }" @click="view = 'patho'">Par pathologie</button>
-        </nav>
+      <!-- Onglets (postes enrichis) -->
+      <nav v-if="tabs.length > 1" class="vtabs">
+        <button v-for="t in tabs" :key="t.key" :class="{ on: view === t.key }" @click="view = t.key">
+          {{ t.label }}
+        </button>
+      </nav>
 
-        <section v-if="view === 'cofog' && node" class="card">
-          <div class="card-head">
-            <h2>Décomposition fonctionnelle <span class="muted">· sous-fonctions COFOG</span></h2>
-            <span class="src">Eurostat</span>
-          </div>
-          <PosteDetail :node="node" :unit="unit" :latest-year="latestYear" :formatter="fmt" :short-fmt="shortFmt" />
-        </section>
-        <SanteComptes v-else-if="view === 'prestataire'" />
-        <SanteFinanceurs v-else-if="view === 'financeur'" />
-        <SanteInternational v-else-if="view === 'international'" />
-        <SantePathologies v-else-if="view === 'patho'" />
-      </template>
+      <!-- Décomposition COFOG (tous les postes) -->
+      <section v-if="view === 'cofog' && node" class="card">
+        <div class="card-head">
+          <h2>Décomposition fonctionnelle <span class="muted">· sous-fonctions COFOG</span></h2>
+          <span class="src">Eurostat</span>
+        </div>
+        <PosteDetail :node="node" :unit="unit" :latest-year="latestYear" :formatter="fmt" :short-fmt="shortFmt" />
+      </section>
 
-      <!-- Autres postes : décompo COFOG + sources à venir -->
-      <template v-else>
-        <section v-if="node" class="card">
-          <div class="card-head">
-            <h2>Décomposition fonctionnelle <span class="muted">· sous-fonctions COFOG</span></h2>
-            <span class="src">Eurostat</span>
-          </div>
-          <PosteDetail :node="node" :unit="unit" :latest-year="latestYear" :formatter="fmt" :short-fmt="shortFmt" />
-        </section>
-        <section class="card soon">
-          <h2>Sources détaillées</h2>
-          <p class="soon-txt">
-            Bientôt : sources administratives nationales adaptées à ce poste (budget de l'État LOLF,
-            DREES, OFGL…).
-          </p>
-        </section>
-      </template>
+      <!-- Sources approfondies (santé) -->
+      <SanteComptes v-else-if="view === 'prestataire'" />
+      <SanteFinanceurs v-else-if="view === 'financeur'" />
+      <SantePathologies v-else-if="view === 'patho'" />
+      <!-- Sources approfondies (international : SHA santé pour Santé, COFOG fonction sinon) -->
+      <SanteInternational v-else-if="view === 'international' && poste.slug === 'sante'" />
+      <PosteInternational v-else-if="view === 'international'" :code="poste.code" :label="poste.label" />
+      <!-- Budget de l'État rattaché -->
+      <PosteEtat v-else-if="view === 'etat'" :missions="poste.missions ?? []" />
+
+      <!-- Postes non enrichis : carte « à venir » -->
+      <section v-if="tabs.length === 1" class="card soon">
+        <h2>Sources détaillées</h2>
+        <p class="soon-txt">
+          Bientôt : sources administratives nationales adaptées à ce poste (budget de l'État LOLF, DREES, OFGL…).
+        </p>
+      </section>
 
       <footer class="foot">
         Décomposition fonctionnelle : Eurostat <code>gov_10a_exp</code> (COFOG) via DBnomics.
