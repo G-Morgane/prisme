@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/** Logo Prisme : marque (prisme + dispersion) et wordmark « PRISM » + « E » en 3 barres. */
 withDefaults(defineProps<{ size?: number; showWord?: boolean }>(), { size: 28, showWord: true })
 </script>
 

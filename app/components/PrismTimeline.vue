@@ -1,30 +1,49 @@
 <script setup lang="ts">
-// Frise des présidents, alignée sur l'axe X de PrismLine (mêmes marges + viewBox).
+/**
+ * Frise des présidents de la République, alignée sur l'axe X de PrismLine
+ * (mêmes marges + viewBox), pour relier l'évolution des dépenses au mandat en cours.
+ */
 const props = defineProps<{ firstYear: number; lastYear: number }>()
 
 const VB_W = 640
 const M = { left: 50, right: 18 }
 const PW = VB_W - M.left - M.right
 
-// Mandats (mi-mai ≈ .37 d'année). "Roughly" : on borne au cadre du graphe.
-const PRESIDENTS = [
+/** Un mandat présidentiel (bornes en années décimales, mi-mai ≈ .37). */
+interface Mandate {
+  name: string
+  start: number
+  end: number
+  color: string
+}
+const PRESIDENTS: Mandate[] = [
   { name: 'Chirac', start: 1995.0, end: 2007.37, color: '#7C98C9' },
   { name: 'Sarkozy', start: 2007.37, end: 2012.37, color: '#5AA6E6' },
   { name: 'Hollande', start: 2012.37, end: 2017.37, color: '#E586A2' },
   { name: 'Macron', start: 2017.37, end: 2025.0, color: '#9B86DF' },
 ]
 
-const x = (year: number) => {
+/** Abscisse SVG d'une année (bornée au cadre du graphe). */
+const x = (year: number): number => {
   const span = props.lastYear - props.firstYear || 1
   const clamped = Math.max(props.firstYear, Math.min(props.lastYear, year))
   return M.left + ((clamped - props.firstYear) / span) * PW
 }
 
-const segments = computed(() =>
+/** Un segment de frise prêt à dessiner. */
+interface Segment {
+  name: string
+  color: string
+  x0: number
+  w: number
+  cx: number
+  years: string
+  wide: boolean
+}
+const segments = computed<Segment[]>(() =>
   PRESIDENTS.map((p) => {
     const x0 = x(p.start)
-    const x1 = x(p.end)
-    const w = x1 - x0
+    const w = x(p.end) - x0
     return {
       name: p.name,
       color: p.color,
@@ -32,7 +51,7 @@ const segments = computed(() =>
       w,
       cx: x0 + w / 2,
       years: `${Math.round(Math.max(p.start, props.firstYear))}–${Math.round(Math.min(p.end, props.lastYear))}`,
-      wide: w > 64,
+      wide: w > 64, // assez large pour afficher les années sous le nom
     }
   }).filter((s) => s.w > 2),
 )

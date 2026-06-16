@@ -1,10 +1,14 @@
 <script setup lang="ts">
-interface Point { year: number; value: number }
-interface Series { id: string; label: string; color: string | null; points: Point[] }
-
+/**
+ * Graphe linéaire SVG fait main : une ou plusieurs séries superposées.
+ * Aire dégradée si série unique, tooltip multi-séries au survol, axe Y jamais négatif.
+ */
 const props = defineProps<{
-  series: Series[]
+  /** Séries à tracer (`color: null` => dégradé prisme). */
+  series: LineSeries[]
+  /** Libellé complet d'une valeur (tooltip). */
   formatter: (v: number | undefined) => string
+  /** Libellé court d'une valeur (axe Y). */
   shortFmt: (v: number) => string
 }>()
 
@@ -29,8 +33,10 @@ const bounds = computed(() => {
   return { min: Math.max(0, min - pad), max: max + pad }
 })
 
-const x = (i: number) => M.left + (n.value <= 1 ? 0 : (i / (n.value - 1)) * PW)
-const y = (v: number) => {
+/** Abscisse SVG de l'indice i (réparti sur la largeur du tracé). */
+const x = (i: number): number => M.left + (n.value <= 1 ? 0 : (i / (n.value - 1)) * PW)
+/** Ordonnée SVG d'une valeur v (selon les bornes calculées). */
+const y = (v: number): number => {
   const { min, max } = bounds.value
   return M.top + (1 - (v - min) / (max - min || 1)) * PH
 }
@@ -57,15 +63,15 @@ const xLabels = computed(() => {
   return [...idx].sort((a, b) => a - b).map((i) => ({ i, year: base.value[i]!.year }))
 })
 
-// --- survol ---
+// --- survol : on déduit l'indice le plus proche de la position de la souris ---
 const svgRef = ref<SVGSVGElement | null>(null)
 const hoverIdx = ref<number | null>(null)
 
-function onMove(e: MouseEvent) {
+function onMove(e: MouseEvent): void {
   const svg = svgRef.value
   if (!svg || n.value === 0) return
   const rect = svg.getBoundingClientRect()
-  const sx = ((e.clientX - rect.left) / rect.width) * VB_W
+  const sx = ((e.clientX - rect.left) / rect.width) * VB_W // position en coordonnées viewBox
   const i = Math.round(((sx - M.left) / PW) * (n.value - 1))
   hoverIdx.value = Math.max(0, Math.min(n.value - 1, i))
 }
