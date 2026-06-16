@@ -258,12 +258,6 @@ const firstYear = computed(() => lineSeries.value[0]?.points[0]?.year ?? null)
 </template>
 
 <style scoped>
-.wrap {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 0 24px 64px;
-}
-
 .hero {
   padding: 56px 0 8px;
   max-width: 640px;

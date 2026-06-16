@@ -55,3 +55,10 @@ body {
 button {
   font-family: inherit;
 }
+
+/* Conteneur de contenu commun à toutes les pages — largeur unique pour un alignement parfait. */
+.wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px 64px;
+}

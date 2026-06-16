@@ -130,6 +130,50 @@ export interface SantePathologiesPayload {
   items: PathologyItem[]
 }
 
+// ─── Budget de l'État (LOLF) — /api/budget-etat ────────────────────────────────
+
+/** Un programme au sein d'une mission (montant en CP, euros). */
+export interface ProgrammeItem {
+  label: string
+  cp: number
+}
+
+/** Une mission budgétaire (montant en CP, euros) et ses programmes. */
+export interface MissionItem {
+  label: string
+  cp: number
+  programmes: ProgrammeItem[]
+}
+
+/** Une nature de dépense LOLF (titre) : personnel, fonctionnement, intervention… */
+export interface TitreItem {
+  code: string
+  label: string
+  cp: number
+}
+
+export interface BudgetEtatPayload {
+  year: number
+  /** Loi de référence (ex. "PLF"). */
+  loi: string
+  /** Total du budget général (toutes missions). */
+  totalBrut: number
+  /** Total hors « Remboursements et dégrèvements » (mécanique fiscale). */
+  totalNet: number
+  /** Missions hors remboursements/dégrèvements, triées par poids. */
+  missions: MissionItem[]
+  /** Répartition par titre (nature LOLF). */
+  titres: TitreItem[]
+}
+
+// ─── Évolution de la dépense de l'État — /api/etat-evolution ───────────────────
+
+/** Trajectoire de la dépense de l'administration centrale (S1311), en % du PIB. */
+export interface EtatEvolutionPayload {
+  latestYear: number | null
+  points: Point[]
+}
+
 // ─── Types présentationnels (composants de viz) ────────────────────────────────
 
 /** Item générique pour le donut (PrismDonut). */

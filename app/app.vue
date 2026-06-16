@@ -14,6 +14,9 @@ const enrichedPostes = POSTES.filter((p) => p.enriched)
         <NuxtLink to="/" class="item">
           <span class="dotmark" /> Tableau de bord
         </NuxtLink>
+        <NuxtLink to="/budget-etat" class="item">
+          <span class="dotmark" /> Budget de l'État
+        </NuxtLink>
 
         <p v-if="enrichedPostes.length" class="group">Analyses détaillées</p>
         <NuxtLink v-for="p in enrichedPostes" :key="p.code" :to="`/poste/${p.slug}`" class="item sub">

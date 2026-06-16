@@ -109,11 +109,6 @@ useHead({ title: () => `Prisme — ${poste.value?.label ?? 'poste'}` })
 </template>
 
 <style scoped>
-.wrap {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 0 24px 64px;
-}
 .back {
   display: inline-block;
   margin-top: 28px;
